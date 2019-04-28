@@ -1,7 +1,9 @@
-import {
-  find
-} from './dbFunctions'
-
 export {
-  find
-}
+  find,
+  dropCollection,
+  findById,
+  findOneAndDelete,
+  findOneAndUpdate,
+  insertMany,
+  insertOne
+} from './dbFunctions'
