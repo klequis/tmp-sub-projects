@@ -1,24 +1,24 @@
-export const people = [
+export const fourTodos = [
   {
-    first: 'Abe',
-    last: 'Abrahms',
+    title: 'first todo',
+    completed: false,
   },
   {
-    first: 'Bob',
-    last: 'Baker',
+    title: 'second todo',
+    completed: false,
   },
   {
-    first: 'Charlie',
-    last: 'Clark',
+    title: 'third todo',
+    completed: false,
   },
   {
-    first: 'Don',
-    last: 'Donnelly',
+    title: 'fourth todo',
+    completed: false,
   },
 ]
 
-export const person =
+export const oneTodo =
 {
-  first: 'John',
-  last: 'Doe'
+  title: 'one single todo',
+  completed: false,
 }

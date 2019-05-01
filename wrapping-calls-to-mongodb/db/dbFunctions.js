@@ -7,11 +7,18 @@ const dbName = 'todo-dev'
 
 let client
 
-async function connectDB() {
+export const connectDB = async () => {
   if (!client) {
     client = await MongoClient.connect(mongoUrl, { useNewUrlParser: true })
   }
   return { db: client.db(dbName) }
+}
+
+export const close = async ()  => {
+  if (client) {
+    client.close()
+  }
+  client = undefined
 }
 
 
@@ -31,6 +38,7 @@ export const dropCollection = async (collection) => {
   try {
     const { db } = await connectDB()
     const ret = await db.collection(collection).drop()
+
     return formatReturnSuccess(ret)
   }
   catch (e) {

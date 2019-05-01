@@ -1,4 +1,5 @@
 export {
+  close,
   find,
   dropCollection,
   findById,
