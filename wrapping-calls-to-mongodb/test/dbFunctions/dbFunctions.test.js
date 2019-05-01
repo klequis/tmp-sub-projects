@@ -50,6 +50,4 @@ describe('dbFunctions', () => {
       expect(idFound).to.equal(idToFind)
     })
   })
-
-
 })
