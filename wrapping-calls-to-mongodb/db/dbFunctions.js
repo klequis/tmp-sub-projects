@@ -84,6 +84,9 @@ export const findOneAndDelete = async (collection, id) => {
     return formatReturnSuccess(ret)
   }
   catch (e) {
+    console.log('---------')
+    console.log('findOneAndDelete.catch')
+    console.log('---------')
     logError('findOneAndDelete', e)
     return formatReturnError(e)
   }
