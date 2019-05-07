@@ -1,9 +1,9 @@
 import { ObjectID } from  'mongodb'
 import { omit } from 'ramda'
 
-export const objectIdFromHexString = (hexId) => {
+export const objectIdFromHexString = async (hexId) => {
   try {
-    return ObjectID.createFromHexString(hexId)
+    return await ObjectID.createFromHexString(hexId)
   }
   catch (e) {
     // console.error('error ---')
@@ -12,8 +12,16 @@ export const objectIdFromHexString = (hexId) => {
 }
 
 export const getObjectId = async (id) => {
+
+  // const valid = ObjectID.isValid(id)
+  // console.log('valid', valid)
   if (ObjectID.isValid(id)) {
-    return await objectIdFromHexString(id)
+    const objId = await objectIdFromHexString(id)
+    // console.log('objId', typeof objId)
+
+    return objId
+  } else {
+    throw new Error('this is an error')
   }
 }
 
@@ -46,4 +54,4 @@ const tryIt = (id) => {
 }
 
 
-tryIt('abc')
+// tryIt('abc')

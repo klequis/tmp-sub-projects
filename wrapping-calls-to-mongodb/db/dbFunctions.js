@@ -1,4 +1,4 @@
-import mongodb from 'mongodb'
+import mongodb, { ObjectID } from 'mongodb'
 import { getObjectId, removeIdProp } from './helpers'
 
 const MongoClient = mongodb.MongoClient
@@ -21,7 +21,6 @@ export const close = async ()  => {
   client = undefined
 }
 
-
 const formatReturnSuccess = (data)  => {
   return { data: data, error: '' }
 }
@@ -34,6 +33,10 @@ const logError = (functionName, error)  => {
   console.error(`Error: dbFunctions.${functionName}`, error.message)
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ */
 export const dropCollection = async (collection) => {
   try {
     const { db } = await connectDB()
@@ -51,6 +54,12 @@ export const dropCollection = async (collection) => {
   }
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {object} filter filter criteria
+ * @param {object} project a valid projection
+ */
 export const find = async (collection, filter = {}, project = {}) => {
   try {
     const { db } = await connectDB()
@@ -63,11 +72,16 @@ export const find = async (collection, filter = {}, project = {}) => {
   }
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {string} id a valid _id as string
+ * @param {object} project a valid projection
+ */
 export const findById = async (collection, id, project = {}) => {
   try {
-    const objId = getObjectId(id)
     const { db } = await connectDB()
-    const ret = await db.collection(collection).find({ _id: objId }).project(project).toArray()
+    const ret = await db.collection(collection).find({ _id: ObjectID(id) }).project(project).toArray()
     return formatReturnSuccess(ret)
   }
   catch (e) {
@@ -76,34 +90,43 @@ export const findById = async (collection, id, project = {}) => {
   }
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {string} id a valid _id as string
+ */
 export const findOneAndDelete = async (collection, id) => {
   try {
-    const objId = getObjectId(id)
     const { db } = await connectDB()
-    const ret = await db.collection(collection).findOneAndDelete({ _id: objId })
-    return formatReturnSuccess(ret)
+    const ret = await db.collection(collection).findOneAndDelete({ _id: ObjectID(id) })
+    
+    return formatReturnSuccess(ret.value)
   }
   catch (e) {
-    console.log('---------')
-    console.log('findOneAndDelete.catch')
-    console.log('---------')
     logError('findOneAndDelete', e)
     return formatReturnError(e)
   }
 }
 
-export const findOneAndUpdate = async (collection, id, filter, returnOriginal = false) => {
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {string} id a valid _id as string
+ * @param {object} update document properties to be updated such as { title: 'new title', completed: true }
+ * @param {boolean} returnOriginal if true, returns the original document instead of the updated one
+ */
+export const findOneAndUpdate = async (collection, id, update, returnOriginal = false) => {
   try {
+
     // if the filter has the _id prop, remove it
-    const cleanFilter = removeIdProp(filter)
+    const cleanedUpdate = removeIdProp(update)
     const { db } = await connectDB()
-    const objId = getObjectId(id)
     const ret = await db.collection(collection).findOneAndUpdate(
-      { _id: objId },
-      { $set: cleanFilter },
+      { _id: ObjectID(id) },
+      { $set: cleanedUpdate },
       { returnOriginal: returnOriginal }
     )
-    return formatReturnSuccess(ret)
+    return formatReturnSuccess(ret.value)
   }
   catch (e) {
     console.warn('ERROR: dbFunctions.findOneAndUpdate', e)
@@ -111,11 +134,16 @@ export const findOneAndUpdate = async (collection, id, filter, returnOriginal = 
   }
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {Array} data  an array of documents, without _id, to be inserted
+ */
 export const insertMany = async (collection, data) => {
   try {
     const { db } = await connectDB()
     const ret = await db.collection(collection).insertMany(data)
-    return formatReturnSuccess(ret)
+    return formatReturnSuccess(ret.ops)
   }
   catch (e) {
     console.warn('ERROR: dbFunctions.insertMany', e.message)
@@ -123,15 +151,22 @@ export const insertMany = async (collection, data) => {
   }
 }
 
+/**
+ * 
+ * @param {string} collection the name of a collection
+ * @param {object} data a documnet, without _id, to be inserted
+ */
 export const insertOne = async (collection, data) => {
   try {
     const { db } = await connectDB()
     const ret = await db.collection(collection).insertOne(data)
-    return formatReturnSuccess(ret)
+    return formatReturnSuccess(ret.ops[0])
   }
   catch (e) {
     console.error('ERROR: dbFunctions.insertOne', e)
     return formatReturnError(e)
   }
-
 }
+
+
+
